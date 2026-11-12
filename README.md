@@ -10,7 +10,7 @@ Elegimos y registramos aprendizaje por refuerzo como tema del proyecto. Entre la
 
 La idea surgió de una situación cotidiana: quedar detenido en un semáforo y preguntarse si los tiempos podrían organizarse mejor según el tránsito del momento. Como usuarios del tránsito de Montevideo, percibimos dificultades de coordinación y creemos que vale la pena estudiar alternativas de mejora.
 
-Nos pareció una idea original para nuestro proyecto por la posibilidad de relacionar lo aprendido en clase con una necesidad de la ciudad. Nos interesa su posible utilidad social: reducir esperas y aprovechar mejor el tiempo de quienes circulan. Esa motivación es el punto de partida; la utilidad de cada estrategia debe evaluarse con resultados.
+Nos pareció una idea original para nuestro proyecto porque nos permite estudiar una técnica nueva para nosotros y explorar su aplicación a una necesidad de la ciudad. El trabajo implica aprender los fundamentos del aprendizaje por refuerzo, ponerlos en práctica y explicar cómo funcionan. Nos interesa su posible utilidad social: reducir esperas y aprovechar mejor el tiempo de quienes circulan. Esa motivación es el punto de partida; la utilidad de cada estrategia debe evaluarse con resultados.
 
 ## Propuesta
 
