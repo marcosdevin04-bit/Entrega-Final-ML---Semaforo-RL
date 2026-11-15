@@ -1,0 +1,37 @@
+{
+  "source_url": "https://ckan-data.montevideo.gub.uy/dataset/a2b2243b-358f-4f03-b7bc-0a32c25ed10c/resource/c839b3cd-d12f-4308-976e-d4e9ff9d4d3e/download/autoscope_01_2026_volumen.zip",
+  "downloaded_local_date": "2026-11-12",
+  "zip_sha256": "3f519d73d0d414284c52fe1294a6f9a7e99e6e6b660f280ad71311ec1cc5e111",
+  "archive_member": "Autoscope_01_2026_volumen.csv",
+  "rows_original": 8425612,
+  "rows_selected": 44578,
+  "profiles": 5941,
+  "duplicate_detector_timestamps": 0,
+  "counts_by_split": {
+    "train": 3835,
+    "validation": 954,
+    "test": 1152
+  },
+  "locations": [
+    [
+      "Bv Artigas",
+      "Palmar",
+      "Rivera",
+      "A"
+    ],
+    [
+      "Rivera",
+      "Ponce",
+      "Bv Artigas",
+      "B"
+    ]
+  ],
+  "detectors": [
+    "701404",
+    "701405",
+    "701411",
+    "701412",
+    "701413"
+  ],
+  "note": "Tasas derivadas de volumen_hora. No son llegadas individuales observadas."
+}
