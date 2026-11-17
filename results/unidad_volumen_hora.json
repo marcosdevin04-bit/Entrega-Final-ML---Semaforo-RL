@@ -1,0 +1,27 @@
+{
+  "registros": 44578,
+  "registros_positivos": 40473,
+  "porcentaje_multiplos_de_12": 6.5,
+  "valores_mas_frecuentes": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "total_enero_por_acceso": {
+    "A": {
+      "lectura_por_hora": 41931,
+      "lectura_5_minutos": 503173
+    },
+    "B": {
+      "lectura_por_hora": 26325,
+      "lectura_5_minutos": 315897
+    }
+  },
+  "referencia_im_rivera_vehiculos_por_mes": [
+    295197,
+    401215
+  ],
+  "fuente_referencia": "https://montevideo.gub.uy/sites/default/files/biblioteca/cantidaddevehiculosencirculacionporejevialseleccionado_3.pdf"
+}
