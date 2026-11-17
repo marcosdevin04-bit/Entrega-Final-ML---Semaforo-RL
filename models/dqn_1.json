@@ -1,0 +1,41 @@
+{
+  "algorithm": "dqn",
+  "seed": 1,
+  "episodes": 700,
+  "decisions": 84000,
+  "seconds": 19.274105899996357,
+  "config": {
+    "episodes": 700,
+    "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "evaluation_episodes": 30,
+    "evaluation_seed_start": 800000,
+    "validation_seed_start": 700000,
+    "gamma": 0.97,
+    "q_alpha": 0.12,
+    "dqn_learning_rate": 0.0005,
+    "epsilon_initial": 1.0,
+    "epsilon_final": 0.05,
+    "exploration_fraction": 0.75,
+    "dqn_train_frequency": 4,
+    "fixed_green_candidates": [
+      10,
+      15,
+      20,
+      25,
+      30,
+      40,
+      50,
+      60
+    ]
+  },
+  "python": "3.12.10",
+  "numpy": "2.5.3",
+  "device": "cpu",
+  "torch": "2.14.1+cpu"
+}
