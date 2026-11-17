@@ -9,6 +9,10 @@
 5. `src/dqn.py`: misma idea de valores Q con una red neuronal.
 6. `scripts/evaluate.py`: separación de validación y prueba, comparación y métricas.
 7. `scripts/plots.py` y `scripts/demo.py`: resultados y visualización.
+8. `scripts/sensibilidad_montevideo.py`: evidencia sobre la unidad de los datos y
+   evaluación de Montevideo con la lectura de cinco minutos.
+
+El notebook `guia_proyecto.ipynb` recorre lo mismo ejecutando el código paso a paso.
 
 Los nombres de archivo y variables se mantienen estables. Los comentarios explican
 las decisiones principales. Las pruebas están en un archivo separado para que el
@@ -85,10 +89,18 @@ de políticas fija, no toda la incertidumbre de entrenar un algoritmo nuevamente
 
 - ¿Por qué esto es aprendizaje por refuerzo? Las acciones cambian las colas futuras
   y el agente aprende de recompensas de su interacción, sin etiquetas de acción correcta.
-- ¿Por qué no usar solamente reglas? En estos perfiles locales sí son la mejor
-  opción entre las evaluadas. DQN aporta en otros regímenes, con más costo.
+- ¿Por qué no usar solamente reglas? La regla de mayor cola es una referencia muy
+  fuerte y barata. DQN la supera en los escenarios sintéticos y, con la lectura
+  corregida de Montevideo, por poco (0,47 s por vehículo). Con la unidad publicada,
+  en cambio, la regla gana en Montevideo.
 - ¿DQN siempre supera Q-learning? No existe esa garantía. Acá lo supera en varias
-  condiciones, pero ambos pierden frente a reglas en los perfiles locales.
+  condiciones. Con la unidad publicada ambos pierden frente a las reglas en
+  Montevideo; con la lectura de cinco minutos ambos mejoran al fijo.
+- ¿Por qué hay dos resultados para Montevideo? La columna `volumen_hora` debería ser
+  un conteo de cinco minutos multiplicado por 12, pero solo el 6,5 % de sus valores
+  son múltiplos de 12, y leída como veh/h da 12 veces menos tránsito en Rivera que
+  el indicador oficial de la Intendencia. Lo encontramos después de la prueba, por
+  eso lo presentamos como análisis de sensibilidad y no reentrenamos.
 - ¿Es un MDP perfectamente observado? No afirmamos eso: la discretización pierde
   información y las tasas de llegada no forman parte de la observación. El tiempo
   ayuda a describir el horizonte, pero no elimina toda la información oculta.
