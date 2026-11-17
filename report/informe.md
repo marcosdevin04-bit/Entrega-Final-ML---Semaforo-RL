@@ -2,7 +2,7 @@
 
 Informe grupal de Machine Learning
 
-**Integrantes:** Marcos Devinenzi, Facundo Diaz, Santiago Alba y Domingo Leiva.
+**Integrantes:** Marcos Devincenzi, Facundo Díaz, Santiago Alba y Domingo Leiva.
 
 **Docente:** Gustavo Vazquez. **Entrega y exposición:** 26 de noviembre de 2026.
 

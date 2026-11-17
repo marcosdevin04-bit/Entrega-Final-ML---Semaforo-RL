@@ -102,7 +102,7 @@ def main():
     doc=SimpleDocTemplate(str(out),pagesize=A4,rightMargin=52,leftMargin=52,
                          topMargin=42,bottomMargin=46,
                          title=lines[0].lstrip('# '),
-                         author='Marcos Devinenzi; Facundo Diaz; Santiago Alba; Domingo Leiva')
+                         author='Marcos Devincenzi; Facundo Díaz; Santiago Alba; Domingo Leiva')
     doc.build(story,onFirstPage=footer,onLaterPages=footer)
     print(out)
 
