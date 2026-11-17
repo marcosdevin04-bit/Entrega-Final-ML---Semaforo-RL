@@ -102,6 +102,7 @@ un controlador instalado en una intersección real.
 - `results/figures/`: gráficos.
 - `report/informe.md` y `report/informe.pdf`: informe grupal.
 - `docs/explicacion_codigo.md`: recorrido del código y conceptos para defenderlo.
+- `GUIA_DEFENSA.md`: resumen de decisiones, cifras, puntos débiles y preguntas para la defensa oral.
 - `guia_proyecto.ipynb`: notebook ejecutado que recorre el proyecto de punta a punta.
 
 El DQN mejora frente al control fijo en los escenarios sintéticos evaluados.
