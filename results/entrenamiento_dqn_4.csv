@@ -1,4 +1,4 @@
-algorithm,train_seed,episode,scenario,epsilon,reward,mean_loss,mean_observed_wait
+algoritmo,semilla,episodio,escenario,epsilon,recompensa,perdida_media,espera_media
 dqn,4,1,desigual,1.0,-55.620000000000005,,19.864285714285714
 dqn,4,2,montevideo,0.9981904761904762,-0.8500000000000003,,6.071428571428571
 dqn,4,3,desigual,0.9963809523809524,-85.35000000000001,,27.80130293159609

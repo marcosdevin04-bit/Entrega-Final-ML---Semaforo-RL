@@ -1,4 +1,4 @@
-algorithm,train_seed,episode,scenario,epsilon,reward,mean_loss,mean_observed_wait
+algoritmo,semilla,episodio,escenario,epsilon,recompensa,perdida_media,espera_media
 dqn,0,1,equilibrado,1.0,-25.77,,9.43956043956044
 dqn,0,2,cambiante,0.9981904761904762,-88.16,,32.53136531365314
 dqn,0,3,desigual,0.9963809523809524,-53.51,,17.836666666666666

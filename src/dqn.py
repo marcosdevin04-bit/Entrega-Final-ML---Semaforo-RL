@@ -23,94 +23,94 @@ def crear_red():
 
 
 class DQN:
-    def __init__(self, seed=0, gamma=.97, lr=.0005, capacity=30000):
+    def __init__(self, semilla=0, gamma=.97, tasa_aprendizaje=.0005, capacidad=30000):
         torch.set_num_threads(1)
-        torch.manual_seed(seed)
-        self.rng = np.random.default_rng(seed)
+        torch.manual_seed(semilla)
+        self.rng = np.random.default_rng(semilla)
         self.gamma = gamma
 
-        self.online = crear_red()   # la red que aprende
-        self.target = crear_red()   # la red objetivo (copia)
-        self.target.load_state_dict(self.online.state_dict())
-        self.optimizer = torch.optim.Adam(self.online.parameters(), lr=lr)
+        self.red = crear_red()           # la red que aprende
+        self.red_objetivo = crear_red()  # la copia que se usa para el objetivo
+        self.red_objetivo.load_state_dict(self.red.state_dict())
+        self.optimizador = torch.optim.Adam(self.red.parameters(), lr=tasa_aprendizaje)
 
         # Memoria de experiencias: arreglos de tamaño fijo que se van llenando.
         # Cuando se llena, las jugadas nuevas pisan a las más viejas.
-        self.capacity = capacity
-        self.size = 0        # cuántas jugadas hay guardadas
-        self.position = 0    # dónde se guarda la próxima
-        self.updates = 0     # cuántas veces se entrenó la red
-        self.states = np.empty((capacity, 5), dtype=np.float32)
-        self.next_states = np.empty((capacity, 5), dtype=np.float32)
-        self.actions = np.empty(capacity, dtype=np.int64)
-        self.rewards = np.empty(capacity, dtype=np.float32)
-        self.dones = np.empty(capacity, dtype=np.float32)
+        self.capacidad = capacidad
+        self.guardadas = 0       # cuántas jugadas hay guardadas
+        self.posicion = 0        # dónde se guarda la próxima
+        self.entrenamientos = 0  # cuántas veces se entrenó la red
+        self.estados = np.empty((capacidad, 5), dtype=np.float32)
+        self.siguientes = np.empty((capacidad, 5), dtype=np.float32)
+        self.acciones = np.empty(capacidad, dtype=np.int64)
+        self.recompensas = np.empty(capacidad, dtype=np.float32)
+        self.terminados = np.empty(capacidad, dtype=np.float32)
 
-    def act(self, obs, epsilon=0.):
+    def actuar(self, obs, epsilon=0.):
         """Epsilon-greedy: con probabilidad epsilon explora al azar; si no, la acción de mayor Q."""
         if self.rng.random() < epsilon:
             return int(self.rng.integers(2))
         with torch.no_grad():
             x = torch.from_numpy(np.asarray(obs, dtype=np.float32))
-            valores_q = self.online(x)
+            valores_q = self.red(x)
             return int(valores_q.argmax().item())
 
-    def remember(self, obs, action, reward, nxt, done):
+    def recordar(self, obs, accion, recompensa, siguiente, termino):
         """Guarda una jugada (estado, acción, recompensa, estado siguiente, terminó)."""
-        p = self.position
-        self.states[p] = obs
-        self.actions[p] = action
-        self.rewards[p] = reward
-        self.next_states[p] = nxt
-        self.dones[p] = done
-        self.position = (p + 1) % self.capacity
-        self.size = min(self.size + 1, self.capacity)
+        p = self.posicion
+        self.estados[p] = obs
+        self.acciones[p] = accion
+        self.recompensas[p] = recompensa
+        self.siguientes[p] = siguiente
+        self.terminados[p] = termino
+        self.posicion = (p + 1) % self.capacidad
+        self.guardadas = min(self.guardadas + 1, self.capacidad)
 
-    def learn(self, batch_size=64):
+    def aprender(self, tamano_lote=64):
         """Un paso de entrenamiento con un lote de 64 jugadas tomadas al azar de la memoria."""
-        if self.size < 1000:
+        if self.guardadas < 1000:
             return None   # se espera a tener al menos 1000 jugadas guardadas
 
         # 1) Elegir el lote al azar.
-        idx = self.rng.choice(self.size, batch_size, replace=False)
-        s = torch.from_numpy(self.states[idx])
-        a = torch.from_numpy(self.actions[idx])
-        r = torch.from_numpy(self.rewards[idx])
-        s_sig = torch.from_numpy(self.next_states[idx])
-        done = torch.from_numpy(self.dones[idx])
+        idx = self.rng.choice(self.guardadas, tamano_lote, replace=False)
+        s = torch.from_numpy(self.estados[idx])
+        a = torch.from_numpy(self.acciones[idx])
+        r = torch.from_numpy(self.recompensas[idx])
+        s_sig = torch.from_numpy(self.siguientes[idx])
+        termino = torch.from_numpy(self.terminados[idx])
 
         # 2) Objetivo, igual que en Q-learning: r + gamma * max Q(s', a').
         #    Se calcula con la red objetivo y sin gradiente. Si terminó, solo r.
         with torch.no_grad():
-            mejor_siguiente = self.target(s_sig).max(1).values
-            objetivo = r + self.gamma * (1 - done) * mejor_siguiente
+            mejor_siguiente = self.red_objetivo(s_sig).max(1).values
+            objetivo = r + self.gamma * (1 - termino) * mejor_siguiente
 
         # 3) Predicción: de cada fila, el valor Q de la acción que se tomó.
-        filas = torch.arange(batch_size)
-        prediccion = self.online(s)[filas, a]
+        filas = torch.arange(tamano_lote)
+        prediccion = self.red(s)[filas, a]
 
         # 4) Pérdida Huber: como el error cuadrático, pero los errores grandes pesan menos.
-        loss = nn.functional.smooth_l1_loss(prediccion, objetivo)
+        perdida = nn.functional.smooth_l1_loss(prediccion, objetivo)
 
         # 5) Paso de gradiente, igual que en el lab de redes.
-        self.optimizer.zero_grad()
-        loss.backward()
-        nn.utils.clip_grad_norm_(self.online.parameters(), 10.)  # evita pasos demasiado grandes
-        self.optimizer.step()
+        self.optimizador.zero_grad()
+        perdida.backward()
+        nn.utils.clip_grad_norm_(self.red.parameters(), 10.)  # evita pasos demasiado grandes
+        self.optimizador.step()
 
         # 6) Cada 250 entrenamientos se copia la red que aprende en la red objetivo.
-        self.updates += 1
-        if self.updates % 250 == 0:
-            self.target.load_state_dict(self.online.state_dict())
-        return float(loss.item())
+        self.entrenamientos += 1
+        if self.entrenamientos % 250 == 0:
+            self.red_objetivo.load_state_dict(self.red.state_dict())
+        return float(perdida.item())
 
-    def save(self, path):
+    def guardar(self, ruta):
         # Solo se guardan los pesos de la red (alcanza para usarla, no para seguir entrenando).
-        torch.save(self.online.state_dict(), path)
+        torch.save(self.red.state_dict(), ruta)
 
     @classmethod
-    def load(cls, path):
+    def cargar(cls, ruta):
         agente = cls()
-        agente.online.load_state_dict(torch.load(path, map_location='cpu', weights_only=True))
-        agente.target.load_state_dict(agente.online.state_dict())
+        agente.red.load_state_dict(torch.load(ruta, map_location='cpu', weights_only=True))
+        agente.red_objetivo.load_state_dict(agente.red.state_dict())
         return agente

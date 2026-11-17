@@ -1,0 +1,15 @@
+{
+  "episodios": 700,
+  "semillas_entrenamiento": [0, 1, 2, 3, 4],
+  "episodios_evaluacion": 30,
+  "semilla_evaluacion_inicial": 800000,
+  "semilla_validacion_inicial": 700000,
+  "gamma": 0.97,
+  "alpha_q_learning": 0.12,
+  "tasa_aprendizaje_dqn": 0.0005,
+  "epsilon_inicial": 1.0,
+  "epsilon_final": 0.05,
+  "fraccion_exploracion": 0.75,
+  "frecuencia_entrenamiento_dqn": 4,
+  "verdes_fijos_candidatos": [10, 15, 20, 25, 30, 40, 50, 60]
+}

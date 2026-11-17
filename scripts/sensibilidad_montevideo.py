@@ -6,7 +6,7 @@ trae en realidad el conteo de los 5 minutos, y vuelve a evaluar los cuatro
 controladores en Montevideo con esa lectura (tasas x 12).
 
 No se reentrena ni se ajusta nada: se usan los mismos modelos, las mismas ventanas
-de prueba y las mismas semillas que en `scripts/evaluate.py`.
+de prueba y las mismas semillas que en `scripts/evaluar.py`.
 
 Uso:
     python -m scripts.sensibilidad_montevideo
@@ -14,11 +14,10 @@ Uso:
 import json
 import numpy as np
 import pandas as pd
-from src.data import load_windows, real_arrivals
-from src.experiment import ROOT, read_json, load_controller, run_episode
+from src.datos import cargar_ventanas, llegadas_montevideo
+from src.experimento import RAIZ, CONTROLADORES, leer_json, cargar_controlador, correr_episodio
 
-RESULTS = ROOT / 'results'
-CONTROLADORES = ('fijo', 'reglas', 'q_learning', 'dqn')
+RESULTADOS = RAIZ / 'results'
 FACTOR = 12   # una hora tiene 12 bloques de 5 minutos
 
 # Indicador INEX0105 del Observatorio de Movilidad (IM): vehículos por mes en
@@ -32,7 +31,7 @@ DETECTORES = {'701411': 'A', '701412': 'A', '701413': 'A', '701404': 'B', '70140
 
 def evidencia_unidad():
     """Dos comprobaciones sobre las filas originales de enero de 2026."""
-    df = pd.read_csv(ROOT / 'data' / 'montevideo_seleccion.csv', dtype={'cod_detector': str})
+    df = pd.read_csv(RAIZ / 'data' / 'montevideo_seleccion.csv', dtype={'cod_detector': str})
     valores = df['volumen_hora']
 
     # 1) Si fuera (conteo de 5 minutos) x 12, todos los valores serían múltiplos de 12.
@@ -57,7 +56,7 @@ def evidencia_unidad():
         total_enero_por_acceso=totales,
         referencia_im_rivera_vehiculos_por_mes=[RIVERA_IM_MIN, RIVERA_IM_MAX],
         fuente_referencia=FUENTE_IM)
-    (RESULTS / 'unidad_volumen_hora.json').write_text(
+    (RESULTADOS / 'unidad_volumen_hora.json').write_text(
         json.dumps(evidencia, indent=2, ensure_ascii=False), encoding='utf-8')
     print(f'Valores > 0 que son múltiplos de 12: {pct_multiplos:.1f} %')
     print(f'Valores más frecuentes: {mas_frecuentes}')
@@ -67,65 +66,66 @@ def evidencia_unidad():
 
 
 def evaluar_con_factor(cfg):
-    """Misma prueba de Montevideo que evaluate.py, con las tasas multiplicadas por 12."""
-    windows = load_windows('test')
-    n = cfg['evaluation_episodes']
-    rng = np.random.default_rng(2026)          # mismas ventanas que evaluate.py
-    idx = rng.choice(len(windows), size=n, replace=n > len(windows))
+    """Misma prueba de Montevideo que evaluar.py, con las tasas multiplicadas por 12."""
+    ventanas = cargar_ventanas('prueba')
+    n = cfg['episodios_evaluacion']
+    rng = np.random.default_rng(2026)          # mismas ventanas que evaluar.py
+    idx = rng.choice(len(ventanas), size=n, replace=n > len(ventanas))
 
     filas = []
     for nombre in CONTROLADORES:
-        semillas = cfg['train_seeds'] if nombre in ('q_learning', 'dqn') else [-1]
-        for train_seed in semillas:
-            controlador = load_controller(nombre, train_seed)
+        semillas = cfg['semillas_entrenamiento'] if nombre in ('q_learning', 'dqn') else [-1]
+        for semilla_entrenamiento in semillas:
+            controlador = cargar_controlador(nombre, semilla_entrenamiento)
             for i in range(n):
-                seed = cfg['evaluation_seed_start'] + i   # mismas semillas que evaluate.py
-                _, window = windows[idx[i]]
+                semilla = cfg['semilla_evaluacion_inicial'] + i   # mismas semillas que evaluar.py
+                _, tasas = ventanas[idx[i]]
                 for factor in (1, FACTOR):
-                    arrivals = real_arrivals(window * factor, seed)
-                    m, _ = run_episode(controlador, 'equilibrado', seed, arrivals)
-                    filas.append(dict(factor=factor, algorithm=nombre, train_seed=train_seed,
-                                      traffic_seed=seed, **m))
+                    llegadas = llegadas_montevideo(tasas * factor, semilla)
+                    m, _ = correr_episodio(controlador, 'montevideo', semilla, llegadas)
+                    filas.append(dict(factor=factor, controlador=nombre,
+                                      semilla_entrenamiento=semilla_entrenamiento,
+                                      semilla_transito=semilla, **m))
     df = pd.DataFrame(filas)
 
-    # Tabla resumen, igual que summary.csv.
+    # Tabla resumen, igual que resumen.csv.
     resumen = []
     for factor in (1, FACTOR):
         for nombre in CONTROLADORES:
-            sub = df[(df['factor'] == factor) & (df['algorithm'] == nombre)]
-            fila = dict(factor=factor, algorithm=nombre, n_runs=len(sub))
-            for metrica in ('mean_observed_wait', 'p95_observed_wait', 'pending', 'switches'):
+            sub = df[(df['factor'] == factor) & (df['controlador'] == nombre)]
+            fila = dict(factor=factor, controlador=nombre, corridas=len(sub))
+            for metrica in ('espera_media', 'espera_p95', 'pendientes', 'cambios'):
                 fila[metrica] = float(np.mean(sub[metrica]))
-                fila[metrica + '_std'] = float(np.std(sub[metrica], ddof=1))
+                fila[metrica + '_desvio'] = float(np.std(sub[metrica], ddof=1))
             resumen.append(fila)
     resumen = pd.DataFrame(resumen)
-    resumen.to_csv(RESULTS / 'sensibilidad_montevideo.csv', index=False)
+    resumen.to_csv(RESULTADOS / 'sensibilidad_montevideo.csv', index=False)
 
-    # Diferencias pareadas, semilla por semilla, con bootstrap (igual que evaluate.py).
+    # Diferencias pareadas, semilla por semilla, con bootstrap (igual que evaluar.py).
     # Primero se promedian las 5 versiones de cada agente en la misma semilla de tránsito.
     # Se compara cada controlador contra el fijo y, además, DQN contra mayor cola.
-    comparaciones = [('reglas', 'fijo'), ('q_learning', 'fijo'), ('dqn', 'fijo'), ('dqn', 'reglas')]
+    comparaciones = [('mayor_cola', 'fijo'), ('q_learning', 'fijo'), ('dqn', 'fijo'), ('dqn', 'mayor_cola')]
     pareadas = []
     for factor in (1, FACTOR):
         del_factor = df[df['factor'] == factor]
-        por_semilla = del_factor.groupby(['algorithm', 'traffic_seed'])['mean_observed_wait'].apply(np.mean)
+        por_semilla = del_factor.groupby(['controlador', 'semilla_transito'])['espera_media'].apply(np.mean)
         for nombre, referencia in comparaciones:
-            diffs = (por_semilla[nombre] - por_semilla[referencia]).to_numpy()  # negativo = espera menos
-            medias_boot = np.random.default_rng(42).choice(diffs, (2000, len(diffs))).mean(axis=1)
-            pareadas.append(dict(factor=factor, algorithm=nombre, reference=referencia,
-                                 difference_seconds=float(np.mean(diffs)),
-                                 ci95_low=float(np.percentile(medias_boot, 2.5)),
-                                 ci95_high=float(np.percentile(medias_boot, 97.5))))
-    pd.DataFrame(pareadas).to_csv(RESULTS / 'sensibilidad_montevideo_pareadas.csv', index=False)
+            diferencias = (por_semilla[nombre] - por_semilla[referencia]).to_numpy()  # negativo = espera menos
+            medias_bootstrap = np.random.default_rng(42).choice(diferencias, (2000, len(diferencias))).mean(axis=1)
+            pareadas.append(dict(factor=factor, controlador=nombre, referencia=referencia,
+                                 diferencia_segundos=float(np.mean(diferencias)),
+                                 ic95_inferior=float(np.percentile(medias_bootstrap, 2.5)),
+                                 ic95_superior=float(np.percentile(medias_bootstrap, 97.5))))
+    pd.DataFrame(pareadas).to_csv(RESULTADOS / 'sensibilidad_montevideo_pareadas.csv', index=False)
 
-    tabla = resumen.pivot(index='factor', columns='algorithm', values='mean_observed_wait')
+    tabla = resumen.pivot(index='factor', columns='controlador', values='espera_media')
     print('\nEspera media por auto en Montevideo (s):')
     print(tabla[list(CONTROLADORES)].round(2).to_string())
 
 
 def main():
-    cfg = read_json(ROOT / 'configs' / 'experiment.json')
-    RESULTS.mkdir(exist_ok=True)
+    cfg = leer_json(RAIZ / 'configs' / 'experimento.json')
+    RESULTADOS.mkdir(exist_ok=True)
     evidencia_unidad()
     evaluar_con_factor(cfg)
     print('\nResultados guardados en results/')

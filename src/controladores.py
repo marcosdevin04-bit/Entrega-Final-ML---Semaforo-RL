@@ -9,23 +9,23 @@ MANTENER = 0
 CAMBIAR = 1
 
 
-class FixedController:
-    """Semáforo de tiempos fijos: pide cambiar cuando el verde llega a `green` segundos."""
+class SemaforoFijo:
+    """Semáforo de tiempos fijos: pide cambiar cuando el verde llega a `verde` segundos."""
 
-    def __init__(self, green=25):
-        self.green = green
+    def __init__(self, verde=15):
+        self.verde = verde
 
-    def act(self, obs):
+    def actuar(self, obs):
         edad_verde = round(float(obs[3]) * 60)  # segundos que lleva el verde actual
-        if edad_verde >= self.green:
+        if edad_verde >= self.verde:
             return CAMBIAR
         return MANTENER
 
 
-class QueueController:
+class MayorCola:
     """Regla de mayor cola: pide cambiar si la otra calle tiene más autos esperando."""
 
-    def act(self, obs):
+    def actuar(self, obs):
         fase = int(obs[2])        # 0: verde para A, 1: verde para B
         cola_actual = obs[fase]   # la calle que tiene verde
         cola_otra = obs[1 - fase] # la calle que está en rojo

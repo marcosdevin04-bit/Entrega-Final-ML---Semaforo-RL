@@ -1,4 +1,4 @@
-algorithm,train_seed,episode,scenario,epsilon,reward,mean_loss,mean_observed_wait
+algoritmo,semilla,episodio,escenario,epsilon,recompensa,perdida_media,espera_media
 q_learning,3,1,desigual,1.0,-59.329999999999984,,19.51644736842105
 q_learning,3,2,cambiante,0.9981904761904762,-70.82000000000002,,24.00677966101695
 q_learning,3,3,desigual,0.9963809523809524,-41.52000000000001,,13.97979797979798
