@@ -19,7 +19,7 @@ Elegimos estudiar aprendizaje por refuerzo y aplicarlo a un problema cotidiano d
 El aprendizaje por refuerzo es un tema nuevo para el grupo: el proyecto implica
 estudiar sus fundamentos, implementarlos y explicar su funcionamiento.
 
-La documentación y las fuentes están en [Antecedentes en Montevideo](docs/antecedentes_montevideo.md).
+La documentación y las fuentes están en la sección «Motivación y antecedentes en Montevideo» del [informe](report/informe.md).
 
 ## Instalación
 

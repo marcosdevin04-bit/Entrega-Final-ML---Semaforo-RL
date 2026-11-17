@@ -57,21 +57,18 @@ def main():
     fig.savefig(out/'learning.png')
     plt.close(fig)
     # Curvas por segundo en un episodio reservado, sin elegir el mejor agente.
-    from src.experiment import load_controller,run_episode,write_csv
+    from src.experiment import load_controller,run_episode
     fig, ax = plt.subplots(figsize=(10,4.4))
-    trace_rows=[]
     for j,algorithm in enumerate(algorithms):
         _,trace=run_episode(load_controller(algorithm,0),'cambiante',800000,record=True)
         ax.plot([r['t'] for r in trace],[r['ns']+r['eo'] for r in trace],
                 label=NAMES[algorithm],color=COLORS[j],alpha=.9)
-        trace_rows.extend([dict(algorithm=algorithm,**r) for r in trace])
     ax.axvline(300,color='black',ls='--',lw=.8,label='Cambio de demanda')
     ax.set(xlabel='Segundo',ylabel='Vehículos esperando',title='Mismo tránsito y fase inicial para los cuatro controles')
     ax.legend(ncol=3,frameon=False,fontsize=9)
     fig.tight_layout()
     fig.savefig(out/'queues_episode.png')
     plt.close(fig)
-    write_csv(ROOT/'results'/'demo_trace.csv',trace_rows)
     print('Gráficos guardados en results/figures/')
 
 if __name__ == '__main__':
