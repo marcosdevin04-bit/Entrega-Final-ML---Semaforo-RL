@@ -101,7 +101,6 @@ un controlador instalado en una intersección real.
   Montevideo evaluado con la lectura de cinco minutos (tasas x 12).
 - `results/figures/`: gráficos.
 - `report/informe.md` y `report/informe.pdf`: informe grupal.
-- `presentation/semaforo_rl_final.pptx`: presentación para la exposición.
 - `docs/explicacion_codigo.md`: recorrido del código y conceptos para defenderlo.
 - `guia_proyecto.ipynb`: notebook ejecutado que recorre el proyecto de punta a punta.
 
