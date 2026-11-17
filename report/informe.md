@@ -10,7 +10,7 @@ Informe grupal de Machine Learning
 
 Comparamos cuatro estrategias para controlar una intersección simplificada: tiempos fijos, prioridad a la mayor cola, Q-learning tabular y Deep Q-Network (DQN). Construimos un simulador discreto en Python y evaluamos cada estrategia con las mismas llegadas de vehículos y fase inicial. Además de condiciones sintéticas controladas, incorporamos perfiles derivados de mediciones oficiales del Centro de Gestión de Movilidad de Montevideo.
 
-Entrenamos cinco agentes de cada algoritmo durante 700 episodios y evaluamos 30 episodios por escenario. DQN reduce la espera observada frente al semáforo fijo en los cuatro escenarios sintéticos. Sin embargo, en los perfiles de Montevideo la regla de mayor cola obtiene 4.13 segundos por vehículo, frente a 6.96 del fijo, 12.74 de Q-learning y 12.50 de DQN. Por lo tanto, los resultados no justifican recomendar un agente aprendido para el caso local representado.
+Entrenamos cinco agentes de cada algoritmo durante 700 episodios y evaluamos 30 episodios por escenario. DQN reduce la espera observada frente al semáforo fijo en los cuatro escenarios sintéticos. Sin embargo, en los perfiles de Montevideo la regla de mayor cola obtiene 4.13 segundos por vehículo, frente a 6.96 del fijo, 12.74 de Q-learning y 12.50 de DQN. Con esa lectura de los datos, los resultados no justifican recomendar un agente aprendido para el caso local. Sin embargo, un análisis posterior de la unidad del campo volumen_hora indica que el archivo trae conteos de cinco minutos y no vehículos por hora. Con esa lectura, y sin reentrenar ni ajustar nada, DQN obtiene 8.51 segundos por vehículo, frente a 8.98 de mayor cola y 14.65 del fijo.
 
 La contribución del trabajo es comparar las políticas con un protocolo reproducible y estudiar cómo cambia su desempeño con la demanda. Las colas, esperas y acciones provienen de la simulación. No realizamos una evaluación de campo ni una reconstrucción completa de una intersección real.
 
@@ -129,7 +129,7 @@ Formamos ventanas de dos registros consecutivos separados por cinco minutos. Cad
 
 Las mediciones son reales, pero la secuencia individual de llegadas, las colas y las esperas son simuladas. Los sensores registran circulación observada, no la demanda que existiría bajo otra política. La geometría completa del cruce y los demás movimientos tampoco se reconstruyen.
 
-El recurso contiene volumen_hora, sin la columna volumen que menciona la descripción general. El TXT y la página también difieren al describir si el valor resume la última hora o extrapola cinco minutos. Respetamos la unidad horaria publicada, sin intentar recuperar conteos exactos. Esta incertidumbre y las tasas bajas resultantes condicionan la interpretación local.
+El recurso contiene volumen_hora, sin la columna volumen que menciona la descripción general. El TXT y la página también difieren al describir si el valor resume la última hora o extrapola cinco minutos. Respetamos la unidad horaria publicada, sin intentar recuperar conteos exactos. Esta incertidumbre y las tasas bajas resultantes condicionan la interpretación local. En la sección «Sensibilidad a la unidad de volumen_hora» presentamos evidencia de que, en este archivo, el valor corresponde al conteo de los cinco minutos.
 
 La nota de origen, URL de descarga, licencia de Datos Abiertos - Uruguay, metadatos originales y hash SHA-256 están en data/README.md y data/auditoria_datos.json. La selección y el procesamiento son modificaciones del proyecto, no del proveedor.
 
@@ -189,7 +189,7 @@ DQN obtiene la menor media entre los cuatro controladores en los cuatro escenari
 
 Q-learning mejora frente al fijo en desigual y cambiante, pero empeora en equilibrado y prácticamente empata en estrés. Su desempeño depende del régimen de demanda y presenta más variabilidad. La discretización y la visita finita a estados son explicaciones posibles, no causas aisladas experimentalmente.
 
-En Montevideo la regla de mayor cola obtiene la menor espera. Los dos agentes duplican aproximadamente la espera del fijo. Por tanto, aumentar la capacidad de representación no resuelve el caso local bajo este entrenamiento. Recomendamos la regla como referencia para ese régimen simulado y conservamos el resultado negativo del aprendizaje.
+En Montevideo la regla de mayor cola obtiene la menor espera. Los dos agentes duplican aproximadamente la espera del fijo. Por tanto, aumentar la capacidad de representación no resuelve el caso local bajo este entrenamiento. Recomendamos la regla como referencia para ese régimen simulado y conservamos el resultado negativo del aprendizaje. Este resultado depende de la unidad del dato, como mostramos más adelante.
 
 <!-- pagebreak -->
 
@@ -241,6 +241,43 @@ Ambos algoritmos reciben igual cantidad de interacciones, pero no igual costo co
 
 <!-- pagebreak -->
 
+## Sensibilidad a la unidad de volumen_hora
+
+Las tasas de Montevideo resultaron unas diez veces menores que las de los escenarios sintéticos, lo que motivó revisar la unidad del campo después de la evaluación. El catálogo describe volumen_hora como la cantidad de vehículos de los cinco minutos previos multiplicada por 12 [3]. Dos comprobaciones sobre las 44.578 filas originales indican que, en el archivo de enero de 2026, el campo contiene el conteo de los cinco minutos sin multiplicar.
+
+### Evidencia sobre la unidad
+
+Si el valor fuera un conteo multiplicado por 12, todos los registros serían múltiplos de 12. Entre los 40.473 registros positivos, solo el 6.5% lo es, una proporción cercana a la esperable por azar. Los valores más frecuentes son 1, 2, 3, 4 y 5, imposibles bajo esa definición.
+
+La segunda comprobación compara el total mensual con un indicador independiente de la Intendencia. El Observatorio de Movilidad informa entre 295.197 y 401.215 vehículos por mes en Av. Rivera, tramo de Bv. Artigas a Ponce, entre 2017 y 2018 [9]. Es la misma cuadra del acceso B, en el sentido opuesto.
+
+| Total de enero de 2026, acceso B (Rivera) | Vehículos |
+|---|---|
+| Lectura como veh/h, usada en los resultados principales | 26.325 |
+| Lectura como conteo de cinco minutos | 315.897 |
+| Indicador de la Intendencia para la misma cuadra (2017-2018) | 295.197 a 401.215 por mes |
+
+Solo la lectura de cinco minutos es compatible con el indicador oficial. La diferencia entre ambas lecturas es exactamente un factor 12. Bajo esa lectura, las tasas medias de prueba pasan de 0.027 y 0.016 a 0.32 y 0.19 veh/s, un rango comparable al de los escenarios sintéticos.
+
+### Resultados con la lectura de cinco minutos
+
+Repetimos la prueba de Montevideo multiplicando las tasas por 12. Usamos los mismos modelos, ventanas de prueba y semillas de tránsito que en la evaluación principal. No reentrenamos ni ajustamos ningún controlador. Con factor 1 el procedimiento reproduce exactamente las diferencias de results/paired_differences.csv.
+
+| Espera observada media (s/veh) | Fijo | Mayor cola | Q-learning | DQN |
+|---|---|---|---|---|
+| Lectura como veh/h | 6.96 | 4.13 | 12.74 | 12.50 |
+| Lectura de cinco minutos | 14.65 | 8.98 | 10.56 | 8.51 |
+
+Con la lectura de cinco minutos, los tres controladores adaptativos mejoran al fijo. La diferencia pareada de DQN frente al fijo es -6.14 segundos, con intervalo descriptivo de -8.42 a -4.12. Frente a mayor cola, DQN espera 0.47 segundos menos, de -0.77 a -0.18: una ventaja pequeña, aunque todo el intervalo queda por debajo de cero. El percentil 95 también baja, de 33.77 segundos con el fijo a 19.38 con mayor cola y 19.23 con DQN.
+
+### Cómo interpretarlo
+
+Este análisis se realizó después de observar la prueba, por lo que no reemplaza a los resultados principales: los presentamos como sensibilidad. Los agentes se entrenaron con las tasas locales bajas, de modo que la prueba con factor 12 evalúa su generalización a un régimen local con más tránsito. Un experimento completo con la unidad corregida requeriría volver a preparar los perfiles, reentrenar y reservar una nueva prueba.
+
+La conclusión práctica es que el resultado negativo de Montevideo se explica, al menos en parte, por una demanda simulada casi nula. Con un tránsito compatible con los registros oficiales, el aprendizaje vuelve a ser competitivo, aunque la regla de mayor cola queda muy cerca. Los resultados se reproducen con scripts.sensibilidad_montevideo.
+
+<!-- pagebreak -->
+
 ## Discusión y limitaciones
 
 La adaptación sí aporta en demanda desigual y cambiante, pero una regla simple también captura gran parte de esa mejora. DQN resulta competitivo en los escenarios sintéticos y generaliza al escenario de estrés reservado. El experimento no aísla si su ventaja proviene de la red o de recibir colas continuas: la comparación también cambia la discretización. Una ablación con la misma representación permitiría separar esos efectos.
@@ -251,7 +288,7 @@ En los perfiles locales los agentes realizan menos cambios que mayor cola y pres
 
 La decisión más frágil es usar la suma de volumen_hora de los sensores como tasa exógena de llegada. Son mediciones de circulación bajo semáforos existentes, no demanda independiente de sus acciones. Además, las descripciones del recurso no coinciden completamente y los perfiles derivados son de baja demanda. Si la interpretación de la unidad o la cobertura fuera incorrecta, cambiarían la intensidad simulada y las cifras de espera de Montevideo, incluida la recomendación del controlador.
 
-La evidencia adicional necesaria es confirmar la semántica del campo con el proveedor, contrastar conteos crudos por intervalo y medir llegadas, colas y salidas en el cruce. No multiplicamos arbitrariamente por doce para obtener un resultado más conveniente.
+La sección anterior aporta evidencia de que la unidad usada en los resultados principales era incorrecta y muestra que la recomendación cambia. Mantuvimos los resultados principales para no modificar el protocolo después de observar la prueba, y presentamos ambas lecturas. Restaría confirmar la semántica del campo con el proveedor y medir llegadas, colas y salidas en el cruce.
 
 ### Otros límites concretos
 
@@ -261,7 +298,7 @@ El semáforo fijo comparte tiempos entre accesos y podría mejorar con un plan a
 
 ## Conclusión
 
-Con el presupuesto y simulador utilizados, DQN reduce la espera frente al control fijo en condiciones sintéticas y Q-learning lo hace en dos de esos escenarios. En los perfiles derivados de Montevideo gana la regla de mayor cola. La elección de controlador depende del régimen de demanda, la representación y el costo de entrenamiento.
+Con el presupuesto y simulador utilizados, DQN reduce la espera frente al control fijo en condiciones sintéticas y Q-learning lo hace en dos de esos escenarios. En los perfiles derivados de Montevideo, con la unidad publicada, gana la regla de mayor cola. Con la lectura de cinco minutos, que respaldan los propios datos y un indicador oficial, DQN obtiene la menor espera por un margen pequeño frente a esa regla. La elección de controlador depende del régimen de demanda, la representación y el costo de entrenamiento.
 
 El resultado respalda usar aprendizaje por refuerzo como alternativa a comparar, sin asumir superioridad automática. Antes de una aplicación vial sería necesario validar la interpretación de los datos, calibrar el simulador y ampliar la evaluación con observaciones reales de espera.
 
@@ -269,9 +306,9 @@ El resultado respalda usar aprendizaje por refuerzo como alternativa a comparar,
 
 ## Reproducibilidad y entrega
 
-El repositorio contiene archivos Python, sin notebooks. Las rutas se resuelven desde la carpeta del proyecto y no dependen del nombre de usuario. Los CSV reducidos y los diez modelos se incluyen para ejecutar la comparación sin descargar nuevamente el archivo mensual.
+El código está en archivos Python. El notebook guia_proyecto.ipynb recorre el proyecto paso a paso, pero los resultados oficiales salen de los scripts. Las rutas se resuelven desde la carpeta del proyecto y no dependen del nombre de usuario. Los CSV reducidos y los diez modelos se incluyen para ejecutar la comparación sin descargar nuevamente el archivo mensual.
 
-El flujo completo es: instalar requirements.txt, ejecutar las pruebas con unittest, entrenar con scripts.train, evaluar con scripts.evaluate --select-baseline, generar gráficos con scripts.plots y crear la demostración con scripts.demo. El README incluye los comandos exactos.
+El flujo completo es: instalar requirements.txt, ejecutar las pruebas con unittest, entrenar con scripts.train, evaluar con scripts.evaluate --select-baseline, generar gráficos con scripts.plots, crear la demostración con scripts.demo y repetir el análisis de la unidad con scripts.sensibilidad_montevideo. El README incluye los comandos exactos.
 
 El archivo configs/experiment.json declara semillas, episodios e hiperparámetros. Los logs de entrenamiento, selección del fijo y evaluación quedan en results/. Cada modelo tiene una ficha JSON con versiones y tiempo de entrenamiento. Los modelos guardados sirven para inferencia, no para reanudar exactamente el optimizador o el replay.
 
@@ -296,3 +333,5 @@ La demo HTML reproduce trazas calculadas por Python. Permite pausar y recorrer u
 [7] Intendencia de Montevideo. Centro de Gestión de Movilidad. Consulta 12/11/2026. https://montevideo.gub.uy/tipo/area-tematica/movilidad/gestion-de-la-movilidad/centro-de-gestion-de-movilidad
 
 [8] Intendencia de Montevideo. Implementación del Proyecto Tránsito Adaptativo. Publicado 16/08/2024, actualizado 19/08/2024. Consulta 12/11/2026. https://montevideo.gub.uy/noticias/movilidad-y-transporte/implementacion-del-proyecto-transito-adaptativo
+
+[9] Intendencia de Montevideo, Observatorio de Movilidad. Cantidad de vehículos en circulación por eje vial seleccionado (indicador INEX0105), enero de 2017 a diciembre de 2018. https://montevideo.gub.uy/sites/default/files/biblioteca/cantidaddevehiculosencirculacionporejevialseleccionado_3.pdf
