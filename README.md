@@ -45,6 +45,9 @@ python -m unittest discover -s tests -v
 python -m scripts.evaluate
 python -m scripts.plots
 
+# Revisar la unidad de los datos de Montevideo y evaluar con la lectura corregida
+python -m scripts.sensibilidad_montevideo
+
 # Generar una demo que se abre con doble clic, sin servidor
 python -m scripts.demo
 ```
@@ -93,6 +96,9 @@ un controlador instalado en una intersección real.
 - `results/evaluation.csv`: cada ejecución de evaluación.
 - `results/summary.csv`: medias y desvíos por escenario y controlador.
 - `results/paired_differences.csv`: diferencias frente al semáforo fijo.
+- `results/unidad_volumen_hora.json`: evidencia sobre la unidad de `volumen_hora`.
+- `results/sensibilidad_montevideo.csv` y `results/sensibilidad_montevideo_pareadas.csv`:
+  Montevideo evaluado con la lectura de cinco minutos (tasas x 12).
 - `results/figures/`: gráficos.
 - `report/informe.md` y `report/informe.pdf`: informe grupal.
 - `presentation/semaforo_rl_final.pptx`: presentación para la exposición.
@@ -100,8 +106,13 @@ un controlador instalado en una intersección real.
 - `guia_proyecto.ipynb`: notebook ejecutado que recorre el proyecto de punta a punta.
 
 El DQN mejora frente al control fijo en los escenarios sintéticos evaluados.
-En los perfiles de Montevideo gana el control por mayor cola. El informe
-desarrolla ambos resultados y sus limitaciones.
+En los perfiles de Montevideo, con la unidad publicada, gana el control por
+mayor cola. Pero el archivo de enero de 2026 trae en `volumen_hora` el conteo de
+cinco minutos, no vehículos por hora: solo el 6,5 % de los valores son múltiplos
+de 12 y, leído así, el total mensual de Rivera coincide con el indicador oficial
+de la Intendencia. Con esa lectura, y sin reentrenar, DQN obtiene la menor espera
+(8,51 s, frente a 8,98 s de mayor cola y 14,65 s del fijo). El informe desarrolla
+ambos resultados y sus limitaciones.
 
 ## Organización
 

@@ -102,6 +102,13 @@ las acciones del semáforo, colas o esperas para validar las salidas del simulad
 
 Las tasas obtenidas bajo la unidad publicada son bajas para este modelo. El
 resultado local debe interpretarse condicionado a esa conversión, al período de
-enero y a estos accesos. Para una recomendación vial haría falta confirmar con
-el proveedor la semántica de `volumen_hora`, la calidad de cada sensor y las
-capacidades de descarga de la intersección.
+enero y a estos accesos.
+
+Hay evidencia de que, en este archivo, `volumen_hora` contiene el conteo de los
+cinco minutos y no veh/h: solo el 6,5 % de los valores positivos son múltiplos de
+12 (deberían serlo todos si fuera conteo x 12), y el total de enero del acceso B
+solo coincide con el indicador mensual de la Intendencia para esa cuadra si se lee
+como conteo de cinco minutos. `scripts/sensibilidad_montevideo.py` reproduce estas
+comprobaciones y evalúa los controladores con esa lectura. Para una recomendación
+vial haría falta confirmar con el proveedor la semántica del campo, la calidad de
+cada sensor y las capacidades de descarga de la intersección.
