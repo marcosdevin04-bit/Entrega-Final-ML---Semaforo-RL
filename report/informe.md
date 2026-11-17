@@ -183,7 +183,7 @@ La tabla muestra media y desvío estándar en segundos por vehículo. Para los a
 | Estrés | 18.49 ± 5.92 | 13.62 ± 2.65 | 18.74 ± 6.48 | 11.97 ± 1.89 |
 | Montevideo | 6.96 ± 1.42 | 4.13 ± 1.05 | 12.74 ± 3.66 | 12.50 ± 3.87 |
 
-![Espera observada media y desvío](../results/figures/mean_observed_wait.png)
+![Espera observada media y desvío](../results/figures/espera_media.png)
 
 DQN obtiene la menor media entre los cuatro controladores en los cuatro escenarios sintéticos. Frente al fijo reduce aproximadamente 15.2% en equilibrado, 55.2% en desigual, 48.7% en cambiante y 35.3% en estrés. La diferencia frente a mayor cola es pequeña en equilibrado y mayor en estrés. Estos porcentajes comparan las medias del experimento, no mejoras garantizadas fuera de él.
 
@@ -225,7 +225,7 @@ Los CSV también incluyen vehículos que cruzaron, máxima cola y cantidad de ca
 
 ## Aprendizaje e incertidumbre
 
-![Evolución de la espera durante el entrenamiento](../results/figures/learning.png)
+![Evolución de la espera durante el entrenamiento](../results/figures/aprendizaje.png)
 
 La figura usa una media móvil de 40 episodios, líneas finas por semilla y una línea gruesa promedio. Son episodios con exploración y demandas distintas: no se deben leer como una curva de evaluación controlada ni como evidencia de mejora monótona. La comparación final sin exploración aparece en las tablas anteriores.
 
@@ -233,7 +233,7 @@ Para comparar con el fijo, primero promediamos los cinco agentes de cada algorit
 
 Los intervalos son condicionales a las cinco políticas entrenadas. No capturan completamente la incertidumbre de repetir el entrenamiento y, en Montevideo, las ventanas pueden solaparse y compartir condiciones del mismo día. Por eso no los interpretamos como intervalos de una población de días independientes ni como pruebas definitivas de significación.
 
-En demanda cambiante la diferencia media de DQN frente al fijo es -7.29 segundos, con intervalo descriptivo de -8.10 a -6.49. En Montevideo es +5.54 segundos, de +4.65 a +6.34. El signo negativo indica menor espera y el positivo, mayor espera. Las diferencias completas están en results/paired_differences.csv.
+En demanda cambiante la diferencia media de DQN frente al fijo es -7.29 segundos, con intervalo descriptivo de -8.10 a -6.49. En Montevideo es +5.54 segundos, de +4.65 a +6.34. El signo negativo indica menor espera y el positivo, mayor espera. Las diferencias completas están en results/diferencias_pareadas.csv.
 
 ### Costo de entrenamiento
 
@@ -261,7 +261,7 @@ Solo la lectura de cinco minutos es compatible con el indicador oficial. La dife
 
 ### Resultados con la lectura de cinco minutos
 
-Repetimos la prueba de Montevideo multiplicando las tasas por 12. Usamos los mismos modelos, ventanas de prueba y semillas de tránsito que en la evaluación principal. No reentrenamos ni ajustamos ningún controlador. Con factor 1 el procedimiento reproduce exactamente las diferencias de results/paired_differences.csv.
+Repetimos la prueba de Montevideo multiplicando las tasas por 12. Usamos los mismos modelos, ventanas de prueba y semillas de tránsito que en la evaluación principal. No reentrenamos ni ajustamos ningún controlador. Con factor 1 el procedimiento reproduce exactamente las diferencias de results/diferencias_pareadas.csv.
 
 | Espera observada media (s/veh) | Fijo | Mayor cola | Q-learning | DQN |
 |---|---|---|---|---|
@@ -308,9 +308,9 @@ El resultado respalda usar aprendizaje por refuerzo como alternativa a comparar,
 
 El código está en archivos Python. El notebook guia_proyecto.ipynb recorre el proyecto paso a paso, pero los resultados oficiales salen de los scripts. Las rutas se resuelven desde la carpeta del proyecto y no dependen del nombre de usuario. Los CSV reducidos y los diez modelos se incluyen para ejecutar la comparación sin descargar nuevamente el archivo mensual.
 
-El flujo completo es: instalar requirements.txt, ejecutar las pruebas con unittest, entrenar con scripts.train, evaluar con scripts.evaluate --select-baseline, generar gráficos con scripts.plots, crear la demostración con scripts.demo y repetir el análisis de la unidad con scripts.sensibilidad_montevideo. El README incluye los comandos exactos.
+El flujo completo es: instalar requirements.txt, ejecutar las pruebas con unittest, entrenar con scripts.entrenar, evaluar con scripts.evaluar --elegir-fijo, generar gráficos con scripts.graficos, crear la demostración con scripts.demo y repetir el análisis de la unidad con scripts.sensibilidad_montevideo. El README incluye los comandos exactos.
 
-El archivo configs/experiment.json declara semillas, episodios e hiperparámetros. Los logs de entrenamiento, selección del fijo y evaluación quedan en results/. Cada modelo tiene una ficha JSON con versiones y tiempo de entrenamiento. Los modelos guardados sirven para inferencia, no para reanudar exactamente el optimizador o el replay.
+El archivo configs/experimento.json declara semillas, episodios e hiperparámetros. Los logs de entrenamiento, selección del fijo y evaluación quedan en results/. Cada modelo tiene una ficha JSON con versiones y tiempo de entrenamiento. Los modelos guardados sirven para inferencia, no para reanudar exactamente el optimizador o el replay.
 
 Las ocho comprobaciones separadas verifican conservación de vehículos y esperas, transición sin circulación, verde mínimo y máximo, independencia de llegadas respecto de las acciones, episodios vacíos, separación temporal, actualización terminal de Q-learning y actualización/guardado de DQN.
 

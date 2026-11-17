@@ -2,13 +2,13 @@
 
 ## Orden para leer el código
 
-1. `src/environment.py`: cómo se generan llegadas, se forman colas y cruzan vehículos.
-2. `src/controllers.py`: las dos reglas que sirven como comparación.
+1. `src/entorno.py`: cómo se generan llegadas, se forman colas y cruzan vehículos.
+2. `src/controladores.py`: las dos reglas que sirven como comparación.
 3. `src/q_learning.py`: tabla Q, discretización, exploración y actualización.
-4. `scripts/train.py`: bucle de episodios compartido por los agentes.
+4. `scripts/entrenar.py`: bucle de episodios compartido por los agentes.
 5. `src/dqn.py`: misma idea de valores Q con una red neuronal.
-6. `scripts/evaluate.py`: separación de validación y prueba, comparación y métricas.
-7. `scripts/plots.py` y `scripts/demo.py`: resultados y visualización.
+6. `scripts/evaluar.py`: separación de validación y prueba, comparación y métricas.
+7. `scripts/graficos.py` y `scripts/demo.py`: resultados y visualización.
 8. `scripts/sensibilidad_montevideo.py`: evidencia sobre la unidad de los datos y
    evaluación de Montevideo con la lectura de cinco minutos.
 

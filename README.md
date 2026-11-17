@@ -23,7 +23,7 @@ La documentación y las fuentes están en la sección «Motivación y antecedent
 
 ## Instalación
 
-Usar Python 3.11 o 3.12. Desde la carpeta del proyecto:
+Usar Python 3.12 (las versiones de `requirements.txt` se probaron con esa versión). Desde la carpeta del proyecto:
 
 ```powershell
 python -m venv .venv
@@ -42,8 +42,8 @@ a internet una vez instaladas las dependencias.
 python -m unittest discover -s tests -v
 
 # Comparar los modelos incluidos y generar gráficos
-python -m scripts.evaluate
-python -m scripts.plots
+python -m scripts.evaluar
+python -m scripts.graficos
 
 # Revisar la unidad de los datos de Montevideo y evaluar con la lectura corregida
 python -m scripts.sensibilidad_montevideo
@@ -56,25 +56,32 @@ Abrir `results/demo.html`. Permite reproducir, pausar, cambiar la velocidad y
 recorrer el episodio. Para usar los perfiles de Montevideo:
 
 ```powershell
-python -m scripts.demo --scenario montevideo
+python -m scripts.demo --escenario montevideo
 ```
 
 Para entrenar nuevamente los diez agentes y reproducir el experimento completo:
 
 ```powershell
-python -m scripts.train
-python -m scripts.evaluate --select-baseline
-python -m scripts.plots
+python -m scripts.entrenar
+python -m scripts.evaluar --elegir-fijo
+python -m scripts.graficos
 python -m scripts.demo --gif
 ```
 
-La configuración está en `configs/experiment.json`. La corrida completa usa
+La configuración está en `configs/experimento.json`. La corrida completa usa
 700 episodios de 600 segundos por agente y cinco semillas por algoritmo.
 También se puede probar un entrenamiento breve con
-`python -m scripts.train --algorithm q_learning --episodes 100 --seeds 0`.
+`python -m scripts.entrenar --algoritmo q_learning --episodios 100 --semillas 0`.
 **Ese comando reemplaza el modelo de la semilla 0**: hacerlo en una copia si se
 quieren conservar los resultados incluidos. Los modelos guardados contienen
 pesos/tablas para inferencia, no el estado necesario para reanudar entrenamiento.
+
+Para regenerar el PDF del informe después de editar `report/informe.md`:
+
+```powershell
+python -m pip install -r requirements-informe.txt
+python -m scripts.informe_pdf
+```
 
 ## Datos de Montevideo
 
@@ -93,9 +100,9 @@ un controlador instalado en una intersección real.
 
 ## Resultados e informe
 
-- `results/evaluation.csv`: cada ejecución de evaluación.
-- `results/summary.csv`: medias y desvíos por escenario y controlador.
-- `results/paired_differences.csv`: diferencias frente al semáforo fijo.
+- `results/evaluacion.csv`: cada ejecución de evaluación.
+- `results/resumen.csv`: medias y desvíos por escenario y controlador.
+- `results/diferencias_pareadas.csv`: diferencias frente al semáforo fijo.
 - `results/unidad_volumen_hora.json`: evidencia sobre la unidad de `volumen_hora`.
 - `results/sensibilidad_montevideo.csv` y `results/sensibilidad_montevideo_pareadas.csv`:
   Montevideo evaluado con la lectura de cinco minutos (tasas x 12).
@@ -116,8 +123,17 @@ ambos resultados y sus limitaciones.
 
 ## Organización
 
-`src/` contiene simulador, controladores y agentes. `scripts/` contiene los
-puntos de entrada. Las comprobaciones están separadas en `tests/`.
+| Carpeta | Contenido |
+|---|---|
+| `src/` | `entorno.py` (el cruce), `controladores.py` (fijo y mayor cola), `q_learning.py`, `dqn.py`, `datos.py` (ventanas de Montevideo) y `experimento.py` (cargar controladores y correr episodios). |
+| `scripts/` | `preparar_datos.py`, `entrenar.py`, `evaluar.py`, `sensibilidad_montevideo.py`, `graficos.py`, `demo.py` e `informe_pdf.py`. |
+| `tests/` | `test_proyecto.py`: 8 comprobaciones del simulador y de los agentes. |
+| `configs/` | `experimento.json`: semillas, episodios e hiperparámetros. |
+| `models/` | Los 10 agentes entrenados y una ficha JSON por agente con versiones y tiempo. |
+| `data/` | Selección original de la Intendencia, perfiles derivados y auditoría. |
+| `results/` | Resultados, registros de entrenamiento, gráficos y demo. |
+
+El código está en castellano, como el resto del curso.
 `guia_proyecto.ipynb` recorre el proyecto paso a paso (simulador, controladores,
 una actualización de Q-learning, un entrenamiento chico, DQN y resultados). Solo
 lee archivos del repo: los resultados oficiales salen de los scripts.

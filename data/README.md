@@ -35,13 +35,13 @@ con 8.425.612 filas. Se incluye una selección pequeña para que GitHub y la eje
 local resulten manejables. El ZIP se puede volver a descargar mediante:
 
 ```powershell
-python -m scripts.prepare_data
+python -m scripts.preparar_datos
 ```
 
 También se puede usar un archivo descargado:
 
 ```powershell
-python -m scripts.prepare_data --zip ruta/al/autoscope_01_2026_volumen.zip
+python -m scripts.preparar_datos --zip ruta/al/autoscope_01_2026_volumen.zip
 ```
 
 ## Selección de accesos

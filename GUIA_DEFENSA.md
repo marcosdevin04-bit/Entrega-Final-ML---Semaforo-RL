@@ -48,7 +48,7 @@ Regla de actualización (Watkins y Dayan, 1992):
 
 - α = 0,12 es cuánto se corrige cada vez. Si el episodio terminó, no se suma el término futuro.
 - **Ejemplo del notebook:** la tabla empieza en 0, la recompensa es −1,07 y el estado siguiente vale 0. Entonces `Q = 0 + 0,12 · (−1,07 + 0,97 · 0 − 0) = −0,1284`.
-- La observación es continua, así que se **agrupa en intervalos** (`encode` en `src/q_learning.py`): 7 grupos por cola, 2 fases, 7 grupos de edad y 3 tercios del episodio = **2.058 estados**, con 2 valores cada uno.
+- La observación es continua, así que se **agrupa en intervalos** (`codificar` en `src/q_learning.py`): 7 grupos por cola, 2 fases, 7 grupos de edad y 3 tercios del episodio = **2.058 estados**, con 2 valores cada uno.
 
 ### DQN
 
@@ -61,13 +61,15 @@ Misma idea, pero Q(s, a) la calcula una **red neuronal 5 → 64 → 64 → 2** c
 
 ## Cómo está armado el código
 
-- **`src/environment.py`:** el simulador. `reset()` sortea las llegadas antes de empezar; `step(accion)` avanza 5 segundos en tres pasos (decidir si cambia la fase, simular segundo a segundo, calcular la recompensa); `metrics()` resume el episodio.
-- **`src/controllers.py`:** semáforo fijo y regla de mayor cola.
-- **`src/q_learning.py`** y **`src/dqn.py`:** los dos agentes, con `act`, la actualización y guardar/cargar.
-- **`scripts/train.py`:** el bucle de entrenamiento, igual para los dos agentes.
-- **`scripts/evaluate.py`:** elige el fijo en validación y compara todo en prueba.
+- **`src/entorno.py`:** el simulador (clase `Cruce`). `reiniciar()` sortea las llegadas antes de empezar; `avanzar(accion)` simula 5 segundos en tres pasos (decidir si cambia la fase, simular segundo a segundo, calcular la recompensa); `metrics()` resume el episodio.
+- **`src/controladores.py`:** `SemaforoFijo` y `MayorCola`.
+- **`src/datos.py`:** carga las ventanas de Montevideo y genera sus llegadas.
+- **`src/experimento.py`:** carga los controladores guardados y corre un episodio completo (`correr_episodio`).
+- **`src/q_learning.py`** y **`src/dqn.py`:** los dos agentes, con `actuar`, `actualizar` (Q-learning) o `recordar` y `aprender` (DQN), y `guardar`/`cargar`.
+- **`scripts/entrenar.py`:** el bucle de entrenamiento, igual para los dos agentes.
+- **`scripts/evaluar.py`:** elige el fijo en validación y compara todo en prueba.
 - **`scripts/sensibilidad_montevideo.py`:** evidencia sobre la unidad y evaluación con ×12.
-- **`tests/test_project.py`:** 8 comprobaciones (no se pierden autos, transición, verde mínimo y máximo, llegadas independientes de las acciones, separación por fechas, actualización de Q-learning y de DQN).
+- **`tests/test_proyecto.py`:** 8 comprobaciones (no se pierden autos, transición, verde mínimo y máximo, llegadas independientes de las acciones, separación por fechas, actualización de Q-learning y de DQN).
 
 ## 1. Simulador
 
@@ -157,7 +159,7 @@ Usa el mismo verde para las dos calles. Se eligió en validación entre ocho dur
 Correcto: DQN recibe las colas exactas y Q-learning las agrupa en intervalos. Faltaría una ablación con la misma representación para separar los dos efectos. Está declarado en el informe.
 
 **5. «No buscaron hiperparámetros y entrenaron poco.»**
-Usamos valores fijos declarados en `configs/experiment.json` y no tocamos nada mirando la prueba. Entrenar es barato (unos 18 s por DQN), así que una búsqueda en validación es la mejora más directa.
+Usamos valores fijos declarados en `configs/experimento.json` y no tocamos nada mirando la prueba. Entrenar es barato (unos 18 s por DQN), así que una búsqueda en validación es la mejora más directa.
 
 **6. «El simulador es muy simple.»**
 Sí: 1 auto por segundo para todo el acceso aunque Bv. Artigas tenga 3 carriles, colas que empiezan vacías, sin giros, peatones ni coordinación con otros cruces. Además los sensores miden autos que pasaron con los semáforos actuales, no la demanda que habría con otra política. El objetivo era comparar políticas en un entorno que se pueda entender y verificar, no reproducir el cruce real.
