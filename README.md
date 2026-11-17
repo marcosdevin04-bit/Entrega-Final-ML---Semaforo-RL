@@ -111,6 +111,8 @@ un controlador instalado en una intersección real.
 - `docs/explicacion_codigo.md`: recorrido del código y conceptos para defenderlo.
 - `GUIA_DEFENSA.md`: resumen de decisiones, cifras, puntos débiles y preguntas para la defensa oral.
 - `guia_proyecto.ipynb`: notebook ejecutado que recorre el proyecto de punta a punta.
+- `extra/simulador_3d/`: visualización 3D del cruce, estilo videojuego, con los episodios del
+  simulador (ver su `LEEME.md`). Es un extra: no cambia ningún resultado.
 
 El DQN mejora frente al control fijo en los escenarios sintéticos evaluados.
 En los perfiles de Montevideo, con la unidad publicada, gana el control por
@@ -132,6 +134,7 @@ ambos resultados y sus limitaciones.
 | `models/` | Los 10 agentes entrenados y una ficha JSON por agente con versiones y tiempo. |
 | `data/` | Selección original de la Intendencia, perfiles derivados y auditoría. |
 | `results/` | Resultados, registros de entrenamiento, gráficos y demo. |
+| `extra/` | `simulador_3d/`: el mismo episodio en 3D, para mostrar en la defensa. Necesita internet para cargar Three.js. |
 
 El código está en castellano, como el resto del curso.
 `guia_proyecto.ipynb` recorre el proyecto paso a paso (simulador, controladores,
