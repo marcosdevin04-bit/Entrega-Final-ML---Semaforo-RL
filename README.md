@@ -97,6 +97,7 @@ un controlador instalado en una intersección real.
 - `report/informe.md` y `report/informe.pdf`: informe grupal.
 - `presentation/semaforo_rl_final.pptx`: presentación para la exposición.
 - `docs/explicacion_codigo.md`: recorrido del código y conceptos para defenderlo.
+- `guia_proyecto.ipynb`: notebook ejecutado que recorre el proyecto de punta a punta.
 
 El DQN mejora frente al control fijo en los escenarios sintéticos evaluados.
 En los perfiles de Montevideo gana el control por mayor cola. El informe
@@ -106,7 +107,9 @@ desarrolla ambos resultados y sus limitaciones.
 
 `src/` contiene simulador, controladores y agentes. `scripts/` contiene los
 puntos de entrada. Las comprobaciones están separadas en `tests/`.
-No se utilizan notebooks.
+`guia_proyecto.ipynb` recorre el proyecto paso a paso (simulador, controladores,
+una actualización de Q-learning, un entrenamiento chico, DQN y resultados). Solo
+lee archivos del repo: los resultados oficiales salen de los scripts.
 
 ## Referencias
 
