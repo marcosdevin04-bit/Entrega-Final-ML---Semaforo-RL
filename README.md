@@ -48,16 +48,15 @@ python -m scripts.graficos
 # Revisar la unidad de los datos de Montevideo y evaluar con la lectura corregida
 python -m scripts.sensibilidad_montevideo
 
-# Generar una demo que se abre con doble clic, sin servidor
+# Abrir el simulador 3D con los episodios de los cuatro controladores
 python -m scripts.demo
 ```
 
-Abrir `results/demo.html`. Permite reproducir, pausar, cambiar la velocidad y
-recorrer el episodio. Para usar los perfiles de Montevideo:
-
-```powershell
-python -m scripts.demo --escenario montevideo
-```
+`scripts.demo` corre los cuatro controladores en seis escenarios (los sintéticos y
+Montevideo con las dos lecturas de `volumen_hora`), guarda el resultado en
+`demo/datos.js`, levanta un servidor local y abre `demo/index.html` en el navegador.
+Para cerrarlo, `Ctrl+C` en la terminal. Necesita internet para cargar Three.js.
+Los controles están en `demo/LEEME.md`.
 
 Para entrenar nuevamente los diez agentes y reproducir el experimento completo:
 
@@ -65,7 +64,7 @@ Para entrenar nuevamente los diez agentes y reproducir el experimento completo:
 python -m scripts.entrenar
 python -m scripts.evaluar --elegir-fijo
 python -m scripts.graficos
-python -m scripts.demo --gif
+python -m scripts.demo
 ```
 
 La configuración está en `configs/experimento.json`. La corrida completa usa
@@ -111,8 +110,8 @@ un controlador instalado en una intersección real.
 - `docs/explicacion_codigo.md`: recorrido del código y conceptos para defenderlo.
 - `GUIA_DEFENSA.md`: resumen de decisiones, cifras, puntos débiles y preguntas para la defensa oral.
 - `guia_proyecto.ipynb`: notebook ejecutado que recorre el proyecto de punta a punta.
-- `extra/simulador_3d/`: visualización 3D del cruce, estilo videojuego, con los episodios del
-  simulador (ver su `LEEME.md`). Es un extra: no cambia ningún resultado.
+- `demo/`: simulador 3D del cruce con un episodio de cada controlador. Solo dibuja lo que
+  calcula `src/entorno.py`: no cambia ningún resultado.
 
 El DQN mejora frente al control fijo en los escenarios sintéticos evaluados.
 En los perfiles de Montevideo, con la unidad publicada, gana el control por
@@ -133,8 +132,8 @@ ambos resultados y sus limitaciones.
 | `configs/` | `experimento.json`: semillas, episodios e hiperparámetros. |
 | `models/` | Los 10 agentes entrenados y una ficha JSON por agente con versiones y tiempo. |
 | `data/` | Selección original de la Intendencia, perfiles derivados y auditoría. |
-| `results/` | Resultados, registros de entrenamiento, gráficos y demo. |
-| `extra/` | `simulador_3d/`: el mismo episodio en 3D, para mostrar en la defensa. Necesita internet para cargar Three.js. |
+| `results/` | Resultados, registros de entrenamiento y gráficos. |
+| `demo/` | Simulador 3D: `index.html`, los episodios en `datos.js` (los genera `scripts/demo.py`) y `LEEME.md`. |
 
 El código está en castellano, como el resto del curso.
 `guia_proyecto.ipynb` recorre el proyecto paso a paso (simulador, controladores,

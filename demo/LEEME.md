@@ -1,6 +1,6 @@
 # Semáforo RL en 3D
 
-Visualización extra del proyecto: el cruce de Bv. Artigas y Rivera en 3D, con los
+Demo del proyecto: el cruce de Bv. Artigas y Rivera en 3D, con los
 cuatro controladores (fijo, mayor cola, Q-learning y DQN) manejando el mismo tránsito.
 
 **No es tránsito inventado.** Cada auto aparece en el segundo en que llegó y arranca en
@@ -11,15 +11,14 @@ los números son de **un episodio**, no los promedios del informe.
 
 ## Cómo abrirlo
 
-Abrir `index.html` con Chrome, Edge o Safari. Necesita internet la primera vez para
-cargar Three.js y las tipografías.
-
-Si el navegador no lo abre con doble clic, levantar un servidor local desde esta carpeta
-(`extra/simulador_3d`) y entrar a <http://localhost:8000>:
+Desde la raíz del repo:
 
 ```bash
-python -m http.server 8000
+python -m scripts.demo
 ```
+
+Genera los episodios, levanta un servidor local y abre el simulador en el navegador.
+Para cerrarlo, `Ctrl+C` en la terminal. Necesita internet para cargar Three.js y las tipografías.
 
 ## Controles
 
@@ -36,8 +35,8 @@ python -m http.server 8000
 ## Volver a generar los datos
 
 `datos.js` se genera con el código del repo (`src/` y los modelos de `models/`).
-Desde la raíz del repo:
+Para regenerarlo sin abrir el navegador:
 
 ```bash
-python extra/simulador_3d/exportar_datos.py
+python -m scripts.demo --solo-datos
 ```

@@ -185,7 +185,7 @@ Pueden solaparse y compartir el mismo día. Por eso los intervalos son descripti
 
 - Subir los cambios al repo (y la presentación cuando esté).
 - Agregar a la presentación la diapositiva del ×12 y corregir la 9.
-- Correr `python -m unittest discover -s tests -v` y abrir `results/demo.html` en la computadora de la defensa.
+- Correr `python -m unittest discover -s tests -v` y abrir el simulador con `python -m scripts.demo` en la computadora de la defensa (necesita internet).
 - Tener a mano `guia_proyecto.ipynb` ejecutado por si piden mostrar el código funcionando.
 
 ## Fuentes

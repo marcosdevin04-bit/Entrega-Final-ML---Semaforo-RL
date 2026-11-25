@@ -314,7 +314,7 @@ El archivo configs/experimento.json declara semillas, episodios e hiperparámetr
 
 Las ocho comprobaciones separadas verifican conservación de vehículos y esperas, transición sin circulación, verde mínimo y máximo, independencia de llegadas respecto de las acciones, episodios vacíos, separación temporal, actualización terminal de Q-learning y actualización/guardado de DQN.
 
-La demo HTML reproduce trazas calculadas por Python. Permite pausar y recorrer un episodio compartido por los cuatro controladores. No entrena un agente dentro del navegador. La animación GIF proporciona un respaldo sin dependencias de ejecución.
+La demostración es un simulador 3D en el navegador (scripts.demo y la carpeta demo/). Reproduce un episodio por escenario con el mismo tránsito para los cuatro controladores: cada vehículo llega y cruza en los segundos que calculó el simulador en Python. No entrena ni decide nada dentro del navegador; solo dibuja esas trazas.
 
 ## Referencias
 
