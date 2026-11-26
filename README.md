@@ -75,13 +75,6 @@ También se puede probar un entrenamiento breve con
 quieren conservar los resultados incluidos. Los modelos guardados contienen
 pesos/tablas para inferencia, no el estado necesario para reanudar entrenamiento.
 
-Para regenerar el PDF del informe después de editar `report/informe.md`:
-
-```powershell
-python -m pip install -r requirements-informe.txt
-python -m scripts.informe_pdf
-```
-
 ## Datos de Montevideo
 
 Fuente: Intendencia de Montevideo, Departamento de Movilidad, Centro de Gestión
@@ -128,7 +121,7 @@ informe presenta ese análisis como sensibilidad, junto con sus limitaciones.
 | Carpeta | Contenido |
 |---|---|
 | `src/` | `entorno.py` (el cruce), `controladores.py` (fijo y mayor cola), `q_learning.py`, `dqn.py`, `datos.py` (ventanas de Montevideo) y `experimento.py` (cargar controladores y correr episodios). |
-| `scripts/` | `preparar_datos.py`, `entrenar.py`, `evaluar.py`, `sensibilidad_montevideo.py`, `graficos.py`, `demo.py` e `informe_pdf.py`. |
+| `scripts/` | `preparar_datos.py`, `entrenar.py`, `evaluar.py`, `sensibilidad_montevideo.py`, `graficos.py` y `demo.py`. |
 | `tests/` | `test_proyecto.py`: 8 comprobaciones del simulador y de los agentes. |
 | `configs/` | `experimento.json`: semillas, episodios e hiperparámetros. |
 | `models/` | Los 10 agentes entrenados y una ficha JSON por agente con versiones y tiempo. |
