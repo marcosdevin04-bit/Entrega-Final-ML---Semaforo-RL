@@ -4,7 +4,8 @@ Uso:
     python -m scripts.informe_pdf    # genera report/informe.pdf desde report/informe.md
 
 Entiende un Markdown simple: títulos (#, ##, ###), párrafos, tablas, imágenes,
-**negrita**, `código` y la marca <!-- pagebreak --> para saltar de página.
+**negrita**, `código`, epígrafes de tabla en cursiva (*Tabla 1. ...*) y la marca
+<!-- pagebreak --> para saltar de página.
 """
 from pathlib import Path
 import argparse
@@ -40,6 +41,7 @@ def crear_estilos():
         estilos[nombre].textColor = colors.black
         estilos[nombre].spaceBefore = 14
         estilos[nombre].spaceAfter = 8
+        estilos[nombre].keepWithNext = 1   # un título nunca queda solo al pie de la página
     estilos['Heading1'].fontSize = 17
     estilos['Heading1'].leading = 21
     estilos['Heading2'].fontSize = 12
@@ -51,6 +53,10 @@ def crear_estilos():
                                leading=10, spaceAfter=0))
     estilos.add(ParagraphStyle(name='Epigrafe', fontName='Helvetica-Oblique', fontSize=8,
                                leading=11, spaceAfter=12, textColor=colors.HexColor('#53616b')))
+    estilos.add(ParagraphStyle(name='EpigrafeTabla', parent=estilos['Epigrafe'], spaceBefore=4,
+                               spaceAfter=5, keepWithNext=1))
+    # Las referencias van alineadas a la izquierda: justificadas, las URL abren huecos.
+    estilos.add(ParagraphStyle(name='Referencia', parent=estilos['Cuerpo'], alignment=0))
     return estilos
 
 
@@ -80,6 +86,7 @@ def main():
     lineas = fuente.read_text(encoding='utf-8').splitlines()
 
     i = 0
+    en_referencias = False
     while i < len(lineas):
         linea = lineas[i].strip()
         if not linea:
@@ -91,8 +98,12 @@ def main():
             contenido.append(Paragraph(formato_en_linea(linea[2:]), estilos['Title']))
         elif linea.startswith('## '):
             contenido.append(Paragraph(formato_en_linea(linea[3:]), estilos['Heading1']))
+            en_referencias = linea[3:].strip() == 'Referencias'
         elif linea.startswith('### '):
             contenido.append(Paragraph(formato_en_linea(linea[4:]), estilos['Heading2']))
+        elif re.fullmatch(r'\*[^*].*[^*]\*', linea):
+            # Línea entera en cursiva (*Tabla 1. ...*): epígrafe pegado a la tabla siguiente.
+            contenido.append(Paragraph(formato_en_linea(linea[1:-1]), estilos['EpigrafeTabla']))
         elif linea.startswith('|'):
             # Tabla: se leen todas las líneas que empiezan con | y se saltea la de guiones.
             filas = []
@@ -119,7 +130,8 @@ def main():
                    and not lineas[i + 1].startswith(('#', '|', '![', '<!--'))):
                 i += 1
                 parrafo.append(lineas[i].strip())
-            contenido.append(Paragraph(formato_en_linea(' '.join(parrafo)), estilos['Cuerpo']))
+            estilo = estilos['Referencia'] if en_referencias else estilos['Cuerpo']
+            contenido.append(Paragraph(formato_en_linea(' '.join(parrafo)), estilo))
         i += 1
 
     def pie_de_pagina(lienzo, documento):

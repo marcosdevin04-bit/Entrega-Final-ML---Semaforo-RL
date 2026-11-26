@@ -19,7 +19,7 @@ Elegimos estudiar aprendizaje por refuerzo y aplicarlo a un problema cotidiano d
 El aprendizaje por refuerzo es un tema nuevo para el grupo: el proyecto implica
 estudiar sus fundamentos, implementarlos y explicar su funcionamiento.
 
-La documentación y las fuentes están en la sección «Motivación y antecedentes en Montevideo» del [informe](report/informe.md).
+La documentación y las fuentes están en la sección 3, «Motivación y antecedentes en Montevideo», del [informe](report/informe.pdf).
 
 ## Instalación
 
@@ -106,7 +106,7 @@ un controlador instalado en una intersección real.
 - `results/sensibilidad_montevideo.csv` y `results/sensibilidad_montevideo_pareadas.csv`:
   Montevideo evaluado con la lectura de cinco minutos (tasas x 12).
 - `results/figures/`: gráficos.
-- `report/informe.md` y `report/informe.pdf`: informe grupal.
+- [`report/informe.pdf`](report/informe.pdf): informe final del grupo (fuente en `report/informe.md`).
 - `docs/explicacion_codigo.md`: recorrido del código y conceptos para defenderlo.
 - `GUIA_DEFENSA.md`: resumen de decisiones, cifras, puntos débiles y preguntas para la defensa oral.
 - `guia_proyecto.ipynb`: notebook ejecutado que recorre el proyecto de punta a punta.
@@ -115,12 +115,13 @@ un controlador instalado en una intersección real.
 
 El DQN mejora frente al control fijo en los escenarios sintéticos evaluados.
 En los perfiles de Montevideo, con la unidad publicada, gana el control por
-mayor cola. Pero el archivo de enero de 2026 trae en `volumen_hora` el conteo de
-cinco minutos, no vehículos por hora: solo el 6,5 % de los valores son múltiplos
-de 12 y, leído así, el total mensual de Rivera coincide con el indicador oficial
-de la Intendencia. Con esa lectura, y sin reentrenar, DQN obtiene la menor espera
-(8,51 s, frente a 8,98 s de mayor cola y 14,65 s del fijo). El informe desarrolla
-ambos resultados y sus limitaciones.
+mayor cola. Sin embargo, el archivo de enero de 2026 podría traer en `volumen_hora`
+el conteo de cinco minutos y no vehículos por hora: solo el 6,45 % de los valores
+positivos son múltiplos de 12 y, leído así, el total mensual de Rivera queda en el
+orden de magnitud de un indicador de la Intendencia (de 2017-2018 y del sentido
+contrario, así que no lo confirma). Con esa hipótesis, y sin reentrenar, DQN obtiene
+la menor espera (8,51 s, frente a 8,98 s de mayor cola y 14,65 s del fijo). El
+informe presenta ese análisis como sensibilidad, junto con sus limitaciones.
 
 ## Organización
 
